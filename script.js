@@ -1,3 +1,5 @@
+const SECRET_TAG = "---START_SECRET---";
+
 function toggleMenu() {
     const sb = document.getElementById("sidebar");
     sb.style.width = sb.style.width === "250px" ? "0" : "250px";
@@ -6,7 +8,7 @@ function toggleMenu() {
 function showSection(type) {
     document.getElementById('encrypt-section').style.display = type === 'encrypt' ? 'block' : 'none';
     document.getElementById('decrypt-section').style.display = type === 'decrypt' ? 'block' : 'none';
-    toggleMenu();
+    if(window.innerWidth < 600) toggleMenu();
 }
 
 function addLog(msg) {
@@ -21,9 +23,11 @@ async function processEncrypt() {
 
     if (!imgFile || !text) return alert("اختر صورة واكتب نصاً!");
 
-    addLog("جاري قراءة الصورة...");
+    addLog("جاري تحضير الصورة...");
     const imgBuf = await imgFile.arrayBuffer();
-    const txtBuf = new TextEncoder().encode(text);
+    // ندمج العلامة السرية مع النص لضمان سهولة الاستخراج
+    const fullText = SECRET_TAG + text;
+    const txtBuf = new TextEncoder().encode(fullText);
 
     const out = new Uint8Array(imgBuf.byteLength + txtBuf.byteLength);
     out.set(new Uint8Array(imgBuf), 0);
@@ -33,32 +37,29 @@ async function processEncrypt() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `Crypted_${imgFile.name}`;
+    a.download = `injected_${imgFile.name}`;
     a.click();
-    addLog("تم التلغيم والتحميل!");
+    addLog("تم التلغيم بنجاح! حمل الملف الجديد.");
 }
 
 async function processDecrypt() {
     const file = document.getElementById('decryptInput').files[0];
-    if (!file) return alert("اختر الملف!");
+    if (!file) return alert("اختر الملف الملغم!");
 
-    addLog("جاري تحليل البيانات...");
+    addLog("جاري البحث عن البيانات المخفية...");
     const buf = await file.arrayBuffer();
-    const bytes = new Uint8Array(buf);
+    const decoder = new TextDecoder();
+    const fullContent = decoder.decode(buf);
 
-    let offset = -1;
-    for (let i = 0; i < bytes.length - 1; i++) {
-        if (bytes[i] === 0xFF && bytes[i+1] === 0xD9) { 
-            offset = i + 2; 
-            break; 
-        }
-    }
+    // البحث عن العلامة السرية داخل محتوى الملف
+    const index = fullContent.indexOf(SECRET_TAG);
 
-    if (offset !== -1 && offset < bytes.length) {
-        const secret = bytes.slice(offset);
-        document.getElementById('resultText').value = new TextDecoder().decode(secret);
-        addLog("تم استخراج البيانات!");
+    if (index !== -1) {
+        const secretText = fullContent.substring(index + SECRET_TAG.length);
+        document.getElementById('resultText').value = secretText;
+        addLog("تم استخراج 'مرحبا' بنجاح! ✅");
     } else {
-        addLog("لا توجد بيانات مخفية.");
+        document.getElementById('resultText').value = "لم يتم العثور على نص مخفي.";
+        addLog("فشل الاستخراج: الصورة غير ملغمة أو البيانات تالفة.");
     }
 }

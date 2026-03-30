@@ -1,0 +1,55 @@
+body {
+    background-color: #1a1a1a;
+    color: #e0e0e0;
+    font-family: sans-serif;
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+}
+
+.container {
+    width: 100%;
+    max-width: 400px;
+    background: #2d2d2d;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+}
+
+.section { margin-bottom: 20px; }
+
+label { display: block; margin-bottom: 8px; font-weight: bold; }
+
+input, textarea {
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #444;
+    background: #1e1e1e;
+    color: #fff;
+    box-sizing: border-box;
+}
+
+textarea { height: 100px; resize: none; }
+
+button {
+    width: 100%;
+    padding: 15px;
+    background: #00a8ff;
+    border: none;
+    color: white;
+    font-weight: bold;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.log-container {
+    margin-top: 20px;
+    background: #121212;
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 12px;
+}
+
+#logList { list-style: none; padding: 0; }
+#logList li { color: #00ff00; margin-bottom: 5px; }

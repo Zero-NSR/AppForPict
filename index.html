@@ -3,37 +3,56 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Image Secret Injektor</title>
+    <title>AppForPict Pro</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <div class="navbar">
+        <div class="menu-btn" onclick="toggleMenu()">
+            <span></span><span></span><span></span>
+        </div>
+        <div class="logo">AppForPict Pro</div>
+    </div>
+
+    <div id="sidebar" class="sidebar">
+        <div class="sidebar-header">القائمة</div>
+        <a href="javascript:void(0)" onclick="showSection('encrypt')">🔐 تلغيم صورة</a>
+        <a href="javascript:void(0)" onclick="showSection('decrypt')">🔓 فك تلغيم</a>
+    </div>
+
     <div class="container">
-        <h2>أداة تلغيم الصور الذكية 🛠️</h2>
-        
-        <div class="section">
-            <label>1. اختر صورة التمويه:</label>
-            <input type="file" id="imageInput" accept="image/*">
+        <div id="encrypt-section" class="main-section">
+            <h2>تشفير بيانات داخل صورة</h2>
+            <div class="input-group">
+                <label>اختر صورة التمويه:</label>
+                <input type="file" id="imageInput" accept="image/*">
+            </div>
+            <div class="input-group">
+                <label>اكتب الكود أو النص السري:</label>
+                <textarea id="textContent" placeholder="ضع سكربت Luau أو نصك هنا..."></textarea>
+            </div>
+            <button class="btn-primary" onclick="processEncrypt()">بدء التلغيم والتحميل</button>
         </div>
 
-        <div class="section">
-            <label>2. اختر ملف الكود (اختياري):</label>
-            <input type="file" id="fileInput">
+        <div id="decrypt-section" class="main-section" style="display:none;">
+            <h2>استخراج البيانات من الصورة</h2>
+            <div class="input-group">
+                <label>اختر الصورة الملغمة:</label>
+                <input type="file" id="decryptInput" accept="image/*">
+            </div>
+            <button class="btn-secondary" onclick="processDecrypt()">فك التلغيم الآن</button>
+            <div class="result-area">
+                <label>البيانات المستخرجة:</label>
+                <textarea id="resultText" readonly></textarea>
+            </div>
         </div>
-
-        <div class="section">
-            <label>أو اكتب الكود يدوياً:</label>
-            <textarea id="textContent" placeholder="اكتب كود Luau أو أي نص هنا..."></textarea>
-        </div>
-
-        <button id="generateBtn">تأكيد ودمج الملفات ✨</button>
 
         <div class="log-container">
-            <h4>قائمة السجلات (Logs):</h4>
-            <ul id="logList">
-                <li>جاهز للعمل...</li>
-            </ul>
+            <h4>السجلات:</h4>
+            <ul id="logList"></ul>
         </div>
     </div>
+
     <script src="script.js"></script>
 </body>
 </html>

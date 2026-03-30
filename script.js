@@ -1,48 +1,64 @@
-document.getElementById('generateBtn').addEventListener('click', async () => {
-    const imageInput = document.getElementById('imageInput');
-    const fileInput = document.getElementById('fileInput');
-    const textContent = document.getElementById('textContent').value;
-    const logList = document.getElementById('logList');
+function toggleMenu() {
+    const sb = document.getElementById("sidebar");
+    sb.style.width = sb.style.width === "250px" ? "0" : "250px";
+}
 
-    function addLog(message) {
-        const li = document.createElement('li');
-        li.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
-        logList.appendChild(li);
-    }
+function showSection(type) {
+    document.getElementById('encrypt-section').style.display = type === 'encrypt' ? 'block' : 'none';
+    document.getElementById('decrypt-section').style.display = type === 'decrypt' ? 'block' : 'none';
+    toggleMenu();
+}
 
-    if (!imageInput.files[0]) {
-        alert("الرجاء اختيار صورة أولاً!");
-        return;
-    }
+function addLog(msg) {
+    const li = document.createElement('li');
+    li.textContent = `> ${msg}`;
+    document.getElementById('logList').appendChild(li);
+}
 
-    addLog("بدء عملية المعالجة...");
+async function processEncrypt() {
+    const imgFile = document.getElementById('imageInput').files[0];
+    const text = document.getElementById('textContent').value;
 
-    const imageBuffer = await imageInput.files[0].arrayBuffer();
-    let secretBuffer;
+    if (!imgFile || !text) return alert("اختر صورة واكتب نصاً!");
 
-    if (fileInput.files[0]) {
-        addLog("تم اكتشاف ملف مرفق.");
-        secretBuffer = await fileInput.files[0].arrayBuffer();
-    } else {
-        addLog("استخدام النص المكتوب يدوياً.");
-        const encoder = new TextEncoder();
-        secretBuffer = encoder.encode(textContent).buffer;
-    }
+    addLog("جاري قراءة الصورة...");
+    const imgBuf = await imgFile.arrayBuffer();
+    const txtBuf = new TextEncoder().encode(text);
 
-    // دمج البيانات (الصورة أولاً ثم الكود)
-    const combined = new Uint8Array(imageBuffer.byteLength + secretBuffer.byteLength);
-    combined.set(new Uint8Array(imageBuffer), 0);
-    combined.set(new Uint8Array(secretBuffer), imageBuffer.byteLength);
+    const out = new Uint8Array(imgBuf.byteLength + txtBuf.byteLength);
+    out.set(new Uint8Array(imgBuf), 0);
+    out.set(new Uint8Array(txtBuf), imgBuf.byteLength);
 
-    addLog("تم الدمج بنجاح! جاري التحميل...");
-
-    // إنشاء رابط التحميل
-    const blob = new Blob([combined], { type: imageInput.files[0].type });
+    const blob = new Blob([out], { type: imgFile.type });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `injected_${imageInput.files[0].name}`;
+    a.download = `Crypted_${imgFile.name}`;
     a.click();
+    addLog("تم التلغيم والتحميل!");
+}
 
-    addLog("تمت العملية بنجاح. الملف جاهز!");
-});
+async function processDecrypt() {
+    const file = document.getElementById('decryptInput').files[0];
+    if (!file) return alert("اختر الملف!");
+
+    addLog("جاري تحليل البيانات...");
+    const buf = await file.arrayBuffer();
+    const bytes = new Uint8Array(buf);
+
+    let offset = -1;
+    for (let i = 0; i < bytes.length - 1; i++) {
+        if (bytes[i] === 0xFF && bytes[i+1] === 0xD9) { 
+            offset = i + 2; 
+            break; 
+        }
+    }
+
+    if (offset !== -1 && offset < bytes.length) {
+        const secret = bytes.slice(offset);
+        document.getElementById('resultText').value = new TextDecoder().decode(secret);
+        addLog("تم استخراج البيانات!");
+    } else {
+        addLog("لا توجد بيانات مخفية.");
+    }
+}

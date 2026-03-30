@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Secret Injektor</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h2>أداة تلغيم الصور الذكية 🛠️</h2>
+        
+        <div class="section">
+            <label>1. اختر صورة التمويه:</label>
+            <input type="file" id="imageInput" accept="image/*">
+        </div>
+
+        <div class="section">
+            <label>2. اختر ملف الكود (اختياري):</label>
+            <input type="file" id="fileInput">
+        </div>
+
+        <div class="section">
+            <label>أو اكتب الكود يدوياً:</label>
+            <textarea id="textContent" placeholder="اكتب كود Luau أو أي نص هنا..."></textarea>
+        </div>
+
+        <button id="generateBtn">تأكيد ودمج الملفات ✨</button>
+
+        <div class="log-container">
+            <h4>قائمة السجلات (Logs):</h4>
+            <ul id="logList">
+                <li>جاهز للعمل...</li>
+            </ul>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
